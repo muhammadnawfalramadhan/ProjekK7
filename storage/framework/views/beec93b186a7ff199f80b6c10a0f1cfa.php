@@ -12,12 +12,28 @@
             Data Harga TBS
         </h2>
 
-        <a href="<?php echo e(route('admin.harga.create')); ?>" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-md transition duration-150 ease-in-out font-medium flex items-center">
-            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Tambah Harga Baru
-        </a>
+
+    </div>
+
+    
+    <div class="bg-green-100 p-4 mb-6 rounded-lg">
+        <h3 class="text-xl font-semibold text-green-700">Harga TBS Hari Ini</h3>
+        <p class="text-lg text-green-600">
+            <?php if($hargaTbsToday): ?>
+            Rp <?php echo e(number_format($hargaTbsToday->harga_perkg, 0, ',', '.')); ?> / Kg
+            <?php else: ?>
+            Belum ada harga TBS yang ditetapkan untuk hari ini.
+            <?php endif; ?>
+        </p>
+        <p class="text-sm text-gray-500">
+            Tanggal:
+            <?php if($hargaTbsToday): ?>
+            <?php echo e(\Carbon\Carbon::parse($hargaTbsToday->tanggal)->format('d M Y')); ?>
+
+            <?php else: ?>
+            -
+            <?php endif; ?>
+        </p>
     </div>
 
     <?php if(session('success')): ?>
@@ -27,6 +43,14 @@
     </div>
     <?php endif; ?>
 
+    <div class="flex justify-end mb-6">
+        <a href="<?php echo e(route('admin.harga.create')); ?>" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-md transition duration-150 ease-in-out font-medium flex items-center">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Tambah Harga Baru
+        </a>
+    </div>
     <div class="overflow-x-auto border rounded-lg">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-green-100">

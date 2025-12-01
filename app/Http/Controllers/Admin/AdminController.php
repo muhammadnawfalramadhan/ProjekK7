@@ -24,7 +24,13 @@ class AdminController extends Controller
     public function kelolaTimbangans()
     {
         $timbangans = Timbangan::all();
-        return view('admin.pages.timbangan.index', compact('timbangans'));
+        $totalTbs = $timbangans->sum('berat'); // Menghitung total berat TBS
+        $totalTransaksi = $timbangans->count(); // Menghitung jumlah transaksi
+
+        // Mengambil data harga TBS hari ini (asumsi ada model untuk itu)
+        $hargaTbsToday = HargaTbs::whereDate('tanggal', now()->toDateString())->first();
+
+        return view('admin.pages.timbangan.index', compact('timbangans', 'totalTbs', 'totalTransaksi', 'hargaTbsToday'));
     }
 
     // Tambah Data Timbangan
@@ -44,7 +50,7 @@ class AdminController extends Controller
 
         Timbangan::create($request->all());
 
-        return redirect()->route('admin.pages.timbangan.index')->with('success', 'Data Timbangan berhasil disimpan.');
+        return redirect()->route('admin.timbangan.index')->with('success', 'Data Timbangan berhasil disimpan.');
     }
 
     // Edit Data Timbangan
@@ -66,8 +72,9 @@ class AdminController extends Controller
         $timbangan = Timbangan::findOrFail($id);
         $timbangan->update($request->all());
 
-        return redirect()->route('admin.pages.timbangan.index')->with('success', 'Data Timbangan berhasil diperbarui.');
+        return redirect()->route('admin.timbangan.index')->with('success', 'Data Timbangan berhasil diperbarui.');
     }
+
 
     // Hapus Data Timbangan
     public function hapusTimbangan($id)
@@ -75,14 +82,18 @@ class AdminController extends Controller
         $timbangan = Timbangan::findOrFail($id);
         $timbangan->delete();
 
-        return redirect()->route('admin.pages.timbangan.index')->with('success', 'Data Timbangan berhasil dihapus.');
+        return redirect()->route('admin.timbangan.index')->with('success', 'Data Timbangan berhasil dihapus.');
     }
 
     // Kelola Harga TBS
     public function kelolaHargaTbs()
     {
-        $hargaTbs = HargaTbs::all();
-        return view('admin.pages.harga.index', compact('hargaTbs'));
+        // Ambil harga TBS terbaru berdasarkan tanggal hari ini
+        $hargaTbsToday = HargaTbs::whereDate('tanggal', today())->first();  // Mengambil harga TBS hari ini
+
+        $hargaTbs = HargaTbs::all();  // Ambil semua data harga TBS
+
+        return view('admin.pages.harga.index', compact('hargaTbs', 'hargaTbsToday'));
     }
 
     // Tambah Data Harga TBS
@@ -103,6 +114,49 @@ class AdminController extends Controller
 
         return redirect()->route('admin.harga.index')->with('success', 'Harga TBS berhasil disimpan.');
     }
+
+    // AdminController.php
+
+    // Fungsi untuk menampilkan halaman edit harga TBS
+    public function editHargaTbs($id)
+    {
+        // Mengambil data harga TBS berdasarkan ID
+        $hargaTbs = HargaTbs::where('harga_id', $id)->firstOrFail();
+
+        // Mengembalikan tampilan untuk halaman edit dengan membawa data hargaTbs
+        return view('admin.pages.harga.edit', compact('hargaTbs'));
+    }
+
+    public function updateHargaTbs(Request $request, $id)
+    {
+        // Validasi input dari form
+        $request->validate([
+            'harga_perkg' => 'required|numeric',
+            'tanggal' => 'required|date',
+        ]);
+
+        // Mengambil data harga TBS berdasarkan harga_id
+        $hargaTbs = HargaTbs::where('harga_id', $id)->firstOrFail();
+
+        // Mengupdate data harga TBS
+        $hargaTbs->update($request->all());
+
+        return redirect()->route('admin.harga.index')->with('success', 'Harga TBS berhasil diperbarui.');
+    }
+
+    // Hapus Data Harga TBS
+    public function hapusHargaTbs($id)
+    {
+        // Cari data harga TBS berdasarkan harga_id
+        $hargaTbs = HargaTbs::where('harga_id', $id)->firstOrFail();
+
+        // Hapus data harga TBS
+        $hargaTbs->delete();
+
+        // Redirect kembali ke halaman daftar harga dengan pesan sukses
+        return redirect()->route('admin.harga.index')->with('success', 'Harga TBS berhasil dihapus.');
+    }
+
 
     // Kelola Data Pengguna
     public function kelolaPengguna()

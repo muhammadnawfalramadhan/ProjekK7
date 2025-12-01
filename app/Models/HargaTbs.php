@@ -12,6 +12,8 @@ class HargaTbs extends Model
     // Tentukan nama tabel jika berbeda dengan plural model
     protected $table = 'harga_tbs';
 
+    protected $primaryKey = 'harga_id';
+
     // Kolom yang dapat diisi
     protected $fillable = [
         'harga_perkg',  // Harga per kg TBS
